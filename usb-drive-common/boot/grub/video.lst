@@ -1,0 +1,31 @@
+##############################################################################
+### video.lst
+## vbeprobe will list modes for your hardware, setvbe will provide video=
+
+title Default colors
+color blue/white white/black white/magenta white/magenta
+## bounce back to the main menu
+configfile /boot/grub/menu.lst
+
+title Erase wallpaper
+splashimage
+## bounce back to the main menu
+configfile /boot/grub/menu.lst
+
+## Note that setting modeline is buggy
+
+title 1024x768x32
+setvbe 1024x768x32
+## bounce back to the main menu
+configfile /boot/grub/menu.lst
+
+title 1280x768x32
+setvbe 1280x768x32
+## bounce back to the main menu
+configfile /boot/grub/menu.lst
+
+title 1280x1024x32
+setvbe 1280x1024x32
+
+title Return to menu
+configfile /menu.lst || configfile /boot/grub/menu.lst || configfile /grub/menu.lst

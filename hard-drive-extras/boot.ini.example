@@ -1,0 +1,14 @@
+;
+;Warning: Boot.ini is used on Windows XP and earlier operating systems.
+;Warning: Use BCDEDIT.exe to modify Windows Vista boot options.
+;
+[boot loader]
+timeout=8
+default=multi(0)disk(0)rdisk(0)partition(3)\WINDOWS
+[operating systems]
+multi(0)disk(0)rdisk(0)partition(3)\WINDOWS="Microsoft Windows XP Professional" /NOEXECUTE=OPTIN /FASTDETECT
+multi(0)disk(0)rdisk(0)partition(3)\WINDOWS="Microsoft Windows XP Professional" /noexecute=optin /fastdetect /usepmtimer
+c:\grldr="( More -> )"
+c:\hda.mbr="Backup HDA MBR"
+c:\sda.mbr="Backup SDA MBR"
+c:\g2ldr.mbr="Linux"

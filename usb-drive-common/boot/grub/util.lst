@@ -1,0 +1,134 @@
+##############################################################################
+### util.lst
+
+## clear the splash image
+splashimage
+
+title Find 'bootme' file and chainload partition
+find --set-root /bootme
+chainloader +1 
+
+### The MBR can be copied using dd if=/dev/hda of=hda.mbr bs=512 count=1
+title Boot from MBR backup (hda.mbr)
+find --ignore-floppies --set-root /hda.mbr
+chainloader /hda.mbr
+
+title Boot from MBR backup (sda.mbr)
+find --ignore-floppies --set-root /sda.mbr
+chainloader /sda.mbr
+
+##############################################################################
+### Utility functions
+##############################################################################
+
+title Find Grub2
+find --ignore-floppies --set-root=/boot/grub /boot/grub/grub.cfg || find --ignore-floppies --set-root=/grub           /grub/grub.cfg
+kernel /core.img
+
+# Use another grub menu.lst, which may have no way out. That file is 
+# automatically generated and shouldn't be edited.
+title Grub Legacy\n(any menu.lst on a hard drive)
+find --ignore-floppies --ignore-cd --set-root                      /menu.lst && configfile /menu.lst
+find --ignore-floppies --ignore-cd --set-root=/boot/grub /boot/grub/menu.lst && configfile /menu.lst
+find --ignore-floppies --ignore-cd --set-root=/grub           /grub/menu.lst && configfile /menu.lst
+configfile /menu.lst || configfile /boot/grub/menu.lst || configfile /grub/menu.lst
+
+title isolinux
+find --ignore-floppies --set-root                /isolinux.bin || find --ignore-floppies --set-root=/boot/isolinux /boot/isolinux/isolinux.bin
+chainloader /isolinux.bin
+
+### Special modifications to pass an argument to a loader:
+title Windows NT/2K/XP Recovery Console\ncmldr cmdcons
+find --set-root --ignore-floppies /cmldr
+chainloader /cmldr
+########################################################
+# write string "cmdcons" to memory 0000:7C03 in 2 steps:
+########################################################
+# step 1. Write 4 chars "cmdc" at 0000:7C03
+write 0x7C03 0x63646D63
+# step 2. Write 3 chars "ons" and an ending null at 0000:7C07
+write 0x7C07 0x00736E6F
+
+title Windows NT/2K/XP Recovery Console fallback\n/cmdcons/setupldr.bin cmdcons
+find --set-root --ignore-floppies /cmdcons/setupldr.bin
+chainloader /cmdcons/setupldr.bin
+########################################################
+# write string "cmdcons" to memory 0000:7C03 in 2 steps:
+########################################################
+# step 1. Write 4 chars "cmdc" at 0000:7C03
+write 0x7C03 0x63646D63
+# step 2. Write 3 chars "ons" and an ending null at 0000:7C07
+write 0x7C07 0x00736E6F 
+
+title Hardware Detection Tool 0.5.0\nSee: http://hdt-project.org/wiki
+map --mem /boot/hdt-0.5.0.img.gz (fd0)
+map --hook
+chainloader (fd0)+1
+rootnoverify (fd0)
+map --floppies=1
+
+title Invaders\nSee: http://www.erikyyy.de/invaders/
+find --set-root            --ignore-floppies /boot/invaders
+kernel /boot/invaders
+
+title FreeDOS disk image\nhttp://www.fdos.org/bootdisks/
+find --set-root            --ignore-floppies /boot/FDSTD.288.gz
+map --mem /boot/FDSTD.288.gz (fd0)
+map --hook
+chainloader (fd0)+1
+rootnoverify (fd0)
+map --floppies=1
+
+title FreeDOS bootsector\nfreedos.bss
+find --set-root --ignore-floppy /FREEDOS.BSS
+chainloader /FREEDOS.BSS
+
+title FreeDOS bootsector from floppy\nfreedos.bss
+find --set-root /FREEDOS.BSS
+chainloader /FREEDOS.BSS
+
+title Windows 9x/Me\n(io.sys)
+find --ignore-floppies --set-root /io.sys
+chainloader /io.sys
+savedefault --wait=2
+
+title Windows 9x/Me (io.sys from floppy)
+find --set-root /io.sys
+chainloader /io.sys
+
+## Use floppy emulation on a contiguous file
+### disk images used this way need to be contiguous! ###
+# Generate contiguous files with SysInternals:
+# contig -v -n filename 1474560
+title Emulate /floppy.img as A:
+find --set-root /floppy.img
+# map --memdisk-raw=1 # If the BIOS has no int15/87h, or if it has buggy int15/87h support
+map --floppies=1 /floppy.img (fd0)
+map --hook
+configfile /menu.lst || configfile /boot/grub/menu.lst || configfile /grub/menu.lst
+
+title Set B: to /floppy.img (if the machine already has A:)
+find --set-root --ignore-floppies /floppy.img
+# map --memdisk-raw=1 # If the BIOS has no int15/87h, or if it has buggy int15/87h support
+map --floppies=2 /floppy.img (fd1)
+map --hook
+configfile /menu.lst || configfile /boot/grub/menu.lst || configfile /grub/menu.lst
+
+title MemTest86+ (also included with HDT above)\nSee: http://www.memtest.org
+find --ignore-floppies /boot/memtest86+-4.20.bin.gz
+kernel /boot/memtest86+-4.20.bin.gz
+
+title MemTest86+ installed by Ubuntu
+find --ignore-floppies /memtest86+.bin
+kernel /memtest86+.bin
+
+title MemTest86\nSee: http://www.memtest86.com
+find --ignore-floppies /boot/memtest.bin
+kernel /boot/memtest.bin
+
+title MemTest86 included with Knoppix
+find --ignore-floppies /boot/isolinux/memtest
+kernel /boot/isolinux/memtest
+
+title Return to menu
+configfile /menu.lst || configfile /boot/grub/menu.lst || configfile /grub/menu.lst

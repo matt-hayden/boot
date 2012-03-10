@@ -1,0 +1,217 @@
+##############################################################################
+### /boot/grub/menu.lst
+## Note that an existing /menu.lst will take precedence over this file!
+
+## Special filenames used here:
+## /bootme
+## /boot/splashimage.xpm.gz
+## /linux.lst or /boot/grub/linux.lst or /grub/linux.lst
+## /boot/grub/util.lst
+## /boot/grub/video.lst
+## /KNOPPIX/knoppix.lst
+
+##############################################################################
+### The built-in configuration looks like:
+# default 0
+# timeout 1
+
+# title find /menu.lst, /boot/grub/menu.lst, /grub/menu.lst
+# errorcheck off
+# configfile /menu.lst
+# configfile /boot/grub/menu.lst
+# configfile /grub/menu.lst
+# find --set-root --ignore-floppies --ignore-cd /menu.lst && configfile /menu.lst
+# find --set-root --ignore-floppies --ignore-cd /boot/grub/menu.lst && configfile /boot/grub/menu.lst
+# find --set-root --ignore-floppies --ignore-cd /grub/menu.lst && configfile /grub/menu.lst
+# errorcheck on
+# commandline
+
+# title commandline
+# commandline
+
+# title reboot
+# reboot
+
+# title halt
+# halt 
+##############################################################################
+
+##############################################################################
+### Global options
+##############################################################################
+setkey control capslock
+
+## Splash images must be 14 colors or less in XPM format; GZIP is allowed.
+find --ignore-floppies /boot/splashimage.xpm.gz && splashimage /boot/splashimage.xpm.gz
+#find --ignore-floppies /BOOT/SPLASHI_.GZ && splashimage /BOOT/SPLASHI_.GZ
+background 211000
+foreground AABBCC
+color black/white white/black black/white
+
+## Uncomment for non-graphical
+#splashimage
+#color blue/white white/black white/magenta white/magenta
+
+timeout 10
+## default is a special file format, do not edit!
+find --ignore-floppies --ignore-cd           /default && default /default
+find --ignore-floppies --ignore-cd /boot/grub/default && default /boot/grub/default
+find --ignore-floppies --ignore-cd      /grub/default && default /grub/default
+
+##############################################################################
+### Normal boot options
+##############################################################################
+title Windows 7 or Vista /bootmgr\nThis can be used to install Windows Vista/7\nSee: http://www.pendrivelinux.com/yumi-multiboot-usb-creator/
+find --ignore-floppies --set-root /bootmgr
+chainloader /bootmgr
+savedefault --wait=2
+
+title Windows NT/2K/XP\nFind and load ntldr
+find --ignore-floppies --set-root /ntldr
+chainloader /ntldr
+savedefault --wait=2
+
+title Load MBR of first hard disk (if booting from USB, this may be the USB drive)
+chainloader (hd0)+1
+rootnoverify (hd0)
+
+title Load from first hard drive first partition\n(hd0,0)
+root (hd0,0)
+chainloader +1
+savedefault --wait=2
+
+title Load from first hard drive second partition\n(hd0,1)
+root (hd0,1)
+chainloader +1
+savedefault --wait=2
+
+title Load from first hard drive third partition\n(hd0,2)
+root (hd0,2)
+chainloader +1
+savedefault --wait=2
+
+title Load from first hard drive fourth partition\n(hd0,3)
+root (hd0,3)
+chainloader +1
+savedefault --wait=2
+
+title Load MBR of second hard disk (if booting from USB, this may be the first hard drive)
+chainloader (hd1)+1
+rootnoverify (hd1)
+
+title Load from second hard drive first partition\n(hd1,0)
+root (hd1,0)
+chainloader +1
+savedefault --wait=2
+
+title Load from second hard drive second partition\n(hd1,1)
+root (hd1,1)
+chainloader +1
+savedefault --wait=2
+
+title Load from second hard drive third partition\n(hd1,2)
+root (hd1,2)
+chainloader +1
+savedefault --wait=2
+
+title Load from second hard drive fourth partition\n(hd1,3)
+root (hd1,3)
+chainloader +1
+savedefault --wait=2
+
+
+##############################################################################
+### BEGIN BOOT LOADERS
+##############################################################################
+
+## Looks like boot.kernel.org is down
+title boot.kernel.org\nSee: www.rom-o-matic.net or boot.kernel.org/gpxe_images
+find --ignore-floppies --set-root /boot/gpxe.lkrn
+kernel /boot/gpxe.lkrn
+
+title NetBootMe\nSee: http://www.netboot.me
+find --ignore-floppies --set-root /boot/netbootme.dsk
+map --mem /boot/netbootme.dsk (fd0)
+map --hook
+chainloader (fd0)+1
+rootnoverify (fd0)
+map --floppies=1
+
+title Plop Boot Manager 5.0.14\nSee: http://www.plop.at/en/bootmanager.html
+find --set-root            --ignore-floppies /boot/plpbt.bin
+kernel /boot/plpbt.bin
+
+title Plop Boot Manager (PCMCIA USB driver)
+find --set-root            --ignore-floppies /boot/pcmcia/plpbt.bin
+kernel /boot/pcmcia/plpbt.bin
+
+### SBM loaded from floppy image
+title SBM 3.7.1\nSee: http://paulski.com/zpages.php?id=1612
+map --mem /boot/sbm.img (fd0)
+map --hook
+chainloader (fd0)+1
+rootnoverify (fd0)
+map --floppies=1
+
+##############################################################################
+### Everything else
+##############################################################################
+
+title Linux\nLoad a customized linux.lst
+splashimage
+configfile /linux.lst || configfile /boot/grub/linux.lst || configfile /grub/linux.lst
+
+title KNOPPIX\nLoad a /KNOPPIX/knoppix.lst\n-or- Use KNOPPIX tohd= boot option\n-or- Make a contiguous /KNOPPIX.iso and boot that
+splashimage
+find --ignore-floppies --set-root /KNOPPIX/knoppix.lst && configfile /KNOPPIX/knoppix.lst
+# execution coulld stop here
+find --ignore-floppies --set-root /KNOPPIX.iso
+map /KNOPPIX.iso (0xff)
+map --hook
+chainloader (0xff)
+
+##############################################################################
+### Everything else
+##############################################################################
+
+title CDROM\nEdit this item to specify cd, cd0, cd1, etc.
+chainloader (cd)
+rootnoverify (cd) 
+
+title CDROM fallback\nEdit this item to specify cd, cd0, cd1, etc.
+savedefault --wait=2
+cdrom --init
+map --hook
+chainloader (cd)
+
+title floppy (fd0)
+## floppy loader is sector 1
+chainloader (fd0)+1
+rootnoverify (fd0)
+
+title change video settings...
+find --set-root            --ignore-floppies /boot/grub/video.lst
+configfile /boot/grub/video.lst
+
+title other utilities...
+find --set-root            --ignore-floppies /boot/grub/util.lst
+configfile /boot/grub/util.lst
+
+title grub4dos command line
+## clear the splash image
+splashimage
+## override colors
+color blue/white white/black white/magenta white/magenta
+commandline
+
+title Rescan menu.lst
+configfile /menu.lst || configfile /boot/grub/menu.lst || configfile /grub/menu.lst
+
+title Return to a previous loader (if there was one)
+quit
+
+title reboot
+reboot
+
+title halt\nImportant: this may not work. Can you reach the reset switch?
+halt

@@ -1,0 +1,28 @@
+### Instructions:
+## * locate a special place to install Linux image (here, the filesystem under
+##   /dev/hda1).
+## * boot DSL or Knoppix with the argument tohd=/dev/hda1
+## * copy linux24 and minirt24.gz to /knoppix on that filesystem
+## * make sure the entries in this file reflect file locations
+
+##############################################################################
+### Linux-specific modelines for vga=
+## Colors           640x480     800x600      1024x768     1280x1024
+#  256      8 bit     769         771           773          775
+#  32000   15 bit     784         787           790          793
+#  65000   16 bit     785         788           791          794
+#  16.7M   24 bit     786         789           792          795*
+## * Avoid these?
+# 1440x900@24: 867
+# 1440x900@32: 868
+
+## some example snippets (taken from isolinux/ on the KNOPPIX cd)
+# kernel /boot/isolinux/linux apm=power-off vga=794 nomce noscsi noideraid nosound nofirewire quiet xmodule=vesa loglevel=0 nolapic_timer noeject lang=us
+# kernel /knoppix/linux24     apm=power-off vga=794 nomce noscsi noideraid nosound nofirewire quiet xmodule=vesa loglevel=0 nolapic_timer noeject lang=us
+# ramdisk_size=100000 init=/etc/init lang=us apm=power-off vga=normal initrd=minirt24.gz nomce noapic quiet BOOT_IMAGE=knoppix
+
+title DSL 4.4.10\nChange the kernel command line vga= and fromhd=
+## fails on Athena => comment out find
+find --ignore-floppies /knoppix/linux24
+kernel /knoppix/linux24 ramdisk_size=100000 init=/etc/init lang=us apm=power-off vga=normal nomce noapic quiet BOOT_IMAGE=knoppix fromhd=/dev/hda1 
+initrd /knoppix/minirt24.gz
