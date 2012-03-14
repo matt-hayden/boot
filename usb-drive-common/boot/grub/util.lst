@@ -60,6 +60,21 @@ write 0x7C03 0x63646D63
 # step 2. Write 3 chars "ons" and an ending null at 0000:7C07
 write 0x7C07 0x00736E6F 
 
+title Windows 7 Rescue Environment
+root (hd0,1)
+find --set-root /boot/1/setupldr.bin
+chainloader /boot/1/setupldr.bin
+
+title Windows 7 Restore Image
+root (hd0,1)
+kernel /boot/3/memdisk
+initrd /boot/3/Restore.img
+
+title Windows 7 Backup Image
+root (hd0,1)
+kernel /boot/3/memdisk
+initrd /boot/3/Backup.img
+
 title Hardware Detection Tool 0.5.0\nSee: http://hdt-project.org/wiki
 map --mem /boot/hdt-0.5.0.img.gz (fd0)
 map --hook
@@ -129,6 +144,10 @@ kernel /boot/memtest.bin
 title MemTest86 included with Knoppix
 find --ignore-floppies /boot/isolinux/memtest
 kernel /boot/isolinux/memtest
+
+title MemTest86 included with XBMC-Live
+find --ignore-floppies /live/memtest
+kernel /live/memtest
 
 title Return to menu
 configfile /menu.lst || configfile /boot/grub/menu.lst || configfile /grub/menu.lst

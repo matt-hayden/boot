@@ -1,0 +1,13 @@
+*~[1-9]~
+~$*
+*~
+*.bak
+*.swp
+*.tmp
+tmp/**/* 
+
+# OS generated files #
+######################
+.DS_Store*
+[Dd]esktop.[Ii][Nn][Ii]
+[Tt]humbs.[Dd][Bb]

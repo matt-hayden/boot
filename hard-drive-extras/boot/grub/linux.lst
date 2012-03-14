@@ -7,6 +7,9 @@
 #  16.7M   24 bit     786         789           792          795*
 ## * Avoid these
 
+## clear the splash image
+splashimage
+
 title Linux (GRUB2)
 find --set-root --ignore-floppies --ignore-cd /boot/grub/core.img
 kernel /boot/grub/core.img
@@ -32,17 +35,29 @@ initrd /dsl-4.4.10/boot/isolinux/minirt24.gz
 ###
 ##############################################################################
 
-### Before trying this, copy ubcd503.iso to the root of some drive
+title XBMC-Live
+find --set-root /live/initrd.img
+kernel /live/vmlinuz video=vesafb boot=live xbmc=autostart,setvolume,noalsaconfig splash quiet loglevel=0 persistent quickreboot quickusbmodules notimezone noaccessibility noapparmor noaptcdrom noautologin noxautologin noconsolekeyboard nofastboot nognomepanel nohosts nokpersonalizer nolanguageselector nolocales nonetworking nopowermanagement noprogramcrashes nojockey nosudo noupdatenotifier nouser nopolkitconf noxautoconfig noxscreensaver nopreseed union=aufs
+initrd /live/initrd.img
+
+title Ubuntu Linux
+find --set-root /boot/ubuntu.iso
+map /boot/ubuntu.iso (0xff)
+map --hook
+root (0xff)
+kernel /casper/vmlinuz boot=casper iso-scan/filename=/boot/ubuntu.iso quiet splash locale=nl.UTF-8 --
+initrd /casper/initrd.lz
+
 title Ultimate Boot CD 1
-find --ignore-floppies --set-root /ubcd503.iso
-map /ubcd503.iso (hd32)
+find --ignore-floppies --set-root /boot/ubcd503.iso
+map /boot/ubcd503.iso (hd32)
 map --hook
 chainloader (hd32)
 boot
 
 title Ultimate Boot CD 2
-find --ignore-floppies --set-root /ubcd503.iso
-map /ubcd503.iso (0xff)
+find --ignore-floppies --set-root /boot/ubcd503.iso
+map /boot/ubcd503.iso (0xff)
 map --hook
 chainloader (0xff)
 boot
